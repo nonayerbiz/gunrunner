@@ -9,13 +9,14 @@ def get_dckr_images():
   return [x.strip() for x in sh.docker.image.ls('--format', '{{json .}}').strip().split('\n')]
 
 def build_gunserver():
-  build = True
+  build = False
   for line in get_dckr_images():
     entry = json.loads(line)
     if entry.get('Repository') == 'gunrunner/gundb':
-      build = False
+      build = True
+  print(build)
   if not build:
-    sh.docker.build('.',  '-t', 'gunrunner/gundb', _cwd='./servers/docker')
+    sh.docker.build('.',  '-t', 'gunrunner/gundb', _out=sys.stdout, _cwd='./servers/docker')
 
 
 def parcel_with_parcelmw():
@@ -38,11 +39,7 @@ def parcel_with_parcelmw():
 
 def main():
   build_gunserver()
-  # parcel_with_parcelmw()
-
-
-
-
+  parcel_with_parcelmw()
 
 if __name__ == '__main__':
   main()
