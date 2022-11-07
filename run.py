@@ -1,9 +1,11 @@
 
-import sys
-import sh
-import os
-import time
 import json
+import os
+import sys
+import time
+
+import sh
+
 
 
 known_gun_peers = [
@@ -27,24 +29,9 @@ known_gun_peers = [
   "https://e2eec.herokuapp.com/gun",
   "https://gun-us.herokuapp.com/gun",
   "https://www.raygun.live/gun"
-]
+] # https://github.com/amark/gun/wiki/volunteer.dht
 
 class DckrRunner(object):
-  def get_dckr_images(self):
-    return [x.strip() for x in sh.docker.image.ls('--format', '{{json .}}').strip().split('\n')]
-
-  def get_containers(self):
-    return [x.strip() for x in sh.docker.container.ls('--format', '{{json .}}').strip().split('\n')]
-
-  def build_gunserver(self):
-    dckr_image_exists = False
-    for line in self.get_dckr_images():
-      entry = json.loads(line)
-      if entry.get('Repository') == 'gunrunner/gundb':
-        dckr_image_exists = True
-    if not dckr_image_exists:
-      sh.docker.build('.',  '-t', 'gunrunner/gundb', _out=sys.stdout, _cwd='./servers/docker')
-
   @property
   def gun_server_is_up(self):
    for item in self.get_containers():
@@ -55,32 +42,49 @@ class DckrRunner(object):
       return True
     return False
 
+  def get_dckr_images(self):
+    return [x.strip() for x in sh.docker.image.ls('--format', '{{json .}}').strip().split('\n')]
+
+  def get_containers(self):
+    return [x.strip() for x in sh.docker.container.ls('--format', '{{json .}}').strip().split('\n')]
+
+  def build_gunserver(self):
+    dckr_image_exists = False
+    for line in self.get_dckr_images():
+      entry = json.loads(line)
+      if entry.get('Repository') == self.gunserver_image_name:
+        dckr_image_exists = True
+    if not dckr_image_exists:
+      sh.docker.build('.',  '-t', self.gunserver_image_name, _out=sys.stdout, _cwd='./servers/docker')
+
   def run_gunserver(self):
     if not self.gun_server_is_up:
       self.server_container_id = sh.docker.run(
-        '-d', '--rm', '--name', 'gunrunner', '-p', '8765:8765', 'gunrunner/gundb', 
-        _cwd=cwd, _bg=True, _env=os.environ
+        '-d', '--rm', '--name', 'gunrunner', '-p', '8765:8765', self.gunserver_image_name, 
+        _cwd=self.server_dir, _bg=True, _env=os.environ
       ).strip()
 
   def parcel_with_parcelmw(self):
-    cwd ='./packagers/parcel'
+    
     # TEARDOWN INSTRUCTIONS
     print(f'docker stop {self.server_container_id}')
     print("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
     npm_install = sh.npm.install
-    npm_install(_cwd=cwd, _out=sys.stdout, _bg=False, _env=os.environ)
-    sh.npm.run('serve', _cwd=cwd, _bg=False, _out=sys.stdout, _env=os.environ)
-
+    npm_install(_cwd=self.code_dir, _out=sys.stdout, _bg=False, _env=os.environ)
+    sh.npm.run('serve', _cwd=self.code_dir, _bg=True, _out=sys.stdout, _env=os.environ)
+    time.sleep(5)
+    sh.open("http://localhost:1234/", _bg=True)
+    sh.open("http://localhost:8765/gun", _bg=True)
     # time.sleep(10)
     # sh.docker.stop(container_id)
 
   def __call__(self):
+    self.server_dir = './servers/docker'
+    self.code_dir = './packagers/parcel'
+    self.gunserver_image_name = 'gunrunner/gundb' # rename it here if you must
     self.build_gunserver()
     self.run_gunserver()
     self.parcel_with_parcelmw()
-
-
-
 
 if __name__ == '__main__':
   dckr = DckrRunner()
