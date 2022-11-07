@@ -3,7 +3,7 @@ a mitre for testing gundb code on and off development box
 
 # install the dependencies
 
-#### good to install pyenv but not totally necessary
+_good to install pyenv but not absolutely necessary_
 
 ```Shell
 pip3 install -r requirements.txt
@@ -15,3 +15,6 @@ pip3 install -r requirements.txt
 python run.py
 ```
 
+# notes
+
+opinionated runfile is aimed at macOS environment
