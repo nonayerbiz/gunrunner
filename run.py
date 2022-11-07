@@ -10,7 +10,7 @@ def get_dckr_images():
 
 def build_gunserver():
   build = True
-  for line in dckr_images():
+  for line in get_dckr_images():
     entry = json.loads(line)
     if entry.get('Repository') == 'gunrunner/gundb':
       build = False
