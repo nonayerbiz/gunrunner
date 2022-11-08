@@ -8,15 +8,20 @@ import sh
 
 from utils import *
 
+HERE = os.getcwd()
+PKGR = os.path.join(HERE, 'packagers')
+SRVS = os.path.join(HERE, 'servers')
 
-def __call__(self):
+def __call_relay__(self):
   self.launch_relay()
-  ###
   print(">>>---> TEARDOWN INSTRUCTIONS <---<<<")
-  print(f'docker stop {self.server_container_id}')
-  print("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
-  print()
+  teardown = []
+  teardown.append(f'docker stop {self.server_container_id}')
+  teardown.append("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
+  print("&&".join(teardown))
 
+def __call_peer__(self):
+  self.code_dir = os.path.join(PKGR, 'parcel')
   print("installing project")
   npm_install = sh.npm.install
   npm_install(_cwd=self.code_dir, _out=sys.stdout, _bg=False, _env=os.environ)
@@ -26,16 +31,12 @@ def __call__(self):
   print("opening tabs")
   sh.open("http://localhost:1234/", _bg=True)
   sh.open("http://localhost:8765/gun", _bg=True)
-  # time.sleep(10)
-  # sh.docker.stop(container_id)
-
-kwargs = {
-  'known_gun_peers':known_gun_peers,
-  '__call__':__call__
-}
-MyGunRunner = type('MyGunRunner', (DckrRunner,), kwargs)
-
-
 
 if __name__ == '__main__':
-  MyGunRunner()()
+  # RELAY
+  relay_kwargs = {'__call__':__call_relay__} # these become class props & attrs
+  type('MyRelay', (DckrRunner,), relay_kwargs)()() # define, instantiate & run a python class
+  # PEER
+  peer_kwargs = {'__call__':__call_peer__}
+  type('MyPeer', (object,), peer_kwargs)()()
+

@@ -67,7 +67,6 @@ class DckrRunner(object):
 
   def launch_relay(self):
     self.server_dir = './servers/docker'
-    self.code_dir = './packagers/parcel'
     self.gunserver_image_name = 'gunrunner/gundb' # rename it here if you must
     self.build_gunserver()
     self.run_gunserver()
