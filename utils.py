@@ -36,12 +36,11 @@ class DckrRunner(object):
   @property
   def server_container_id(self):
     if not hasattr(self, '_server_container_id'):
+      self._server_container_id = ''
       for item in self.get_containers():
         entry = json.loads(item)
         if entry.get('Image') == 'gunrunner/gundb' and entry.get('Ports') == '0.0.0.0:8765->8765/tcp':
           self._server_container_id = entry.get('ID')
-        else:
-          self._server_container_id = ''
     return self._server_container_id
 
   @property

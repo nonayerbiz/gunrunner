@@ -35,7 +35,7 @@ if __name__ == '__main__':
   kwargs = {}
   kwargs.update({'__call__':__call_relay__}) # these become class props & attrs
   Relay = type('Relay', (DckrRunner,), kwargs) # define
-  myrelay = Relay() # instiate it
+  myrelay = Relay() # instantiate it
   myrelay()
 
   # PEER
@@ -47,4 +47,4 @@ if __name__ == '__main__':
   teardown = []
   teardown.append(f'docker stop {myrelay.server_container_id}')
   teardown.append("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
-  print("&&".join(teardown))
+  print(" && ".join(teardown))
