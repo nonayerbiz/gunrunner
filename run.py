@@ -32,14 +32,19 @@ def __call_peer__(self):
 
 if __name__ == '__main__':
   # RELAY
-  relay_kwargs = {'__call__':__call_relay__} # these become class props & attrs
-  type('MyRelay', (DckrRunner,), relay_kwargs)()() # define, instantiate & run a python class
+  kwargs = {}
+  kwargs.update({'__call__':__call_relay__}) # these become class props & attrs
+  Relay = type('Relay', (DckrRunner,), kwargs) # define
+  myrelay = Relay() # instiate it
+  myrelay()
+
   # PEER
   peer_kwargs = {'__call__':__call_peer__}
   type('MyPeer', (object,), peer_kwargs)()()
+  
   # TEARDOWN
   print(">>>---> TEARDOWN INSTRUCTIONS <---<<<")
   teardown = []
-  teardown.append(f'docker stop {self.server_container_id}')
+  teardown.append(f'docker stop {myrelay.server_container_id}')
   teardown.append("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
   print("&&".join(teardown))

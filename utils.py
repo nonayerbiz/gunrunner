@@ -34,12 +34,19 @@ known_gun_peers = [
 
 class DckrRunner(object):
   @property
+  def server_container_id(self):
+    if not hasattr(self, '_server_container_id'):
+      for item in self.get_containers():
+        entry = json.loads(item)
+        if entry.get('Image') == 'gunrunner/gundb' and entry.get('Ports') == '0.0.0.0:8765->8765/tcp':
+          self._server_container_id = entry.get('ID')
+        else:
+          self._server_container_id = ''
+    return self._server_container_id
+
+  @property
   def gun_server_is_up(self):
-   for item in self.get_containers():
-    entry = json.loads(item)
-    if entry.get('Image') == 'gunrunner/gundb' and entry.get('Ports') == '0.0.0.0:8765->8765/tcp':
-      if not hasattr(self, 'server_container_id'):
-        self.server_container_id = entry.get('ID')
+    if self.server_container_id:
       return True
     return False
 
@@ -64,7 +71,7 @@ class DckrRunner(object):
 
   def run_gunserver(self):
     if not self.gun_server_is_up:
-      self.server_container_id = sh.docker.run(
+      self._server_container_id = sh.docker.run(
         '-d', '--rm', '--name', 'gunrunner', '-p', '8765:8765', self.gunserver_image_name, 
         _cwd=self.server_dir, _bg=True, _env=os.environ
       ).strip()
