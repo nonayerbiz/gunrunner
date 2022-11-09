@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "flems": "^1.5.10",
     "http-proxy-middleware": "^2.0.6",
     "parcel-bundler": "^1.12.5"
   }

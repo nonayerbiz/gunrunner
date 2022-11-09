@@ -17,8 +17,6 @@ def __call_relay__(self):
   self.launch_relay()
 
 def __call_peer__(self):
-  teardown = []
-
   print("installing project")
   self.code_dir = os.path.join(PKGR, 'parcel')
   npm_install = sh.npm.install
@@ -33,6 +31,8 @@ def __call_peer__(self):
   sh.open("http://localhost:8765/gun", _bg=True)
 
 if __name__ == '__main__':
+  teardown = []
+
   # RELAY
   # kwargs = {}
   # kwargs.update({'__call__':__call_relay__}) # these become class props & attrs
