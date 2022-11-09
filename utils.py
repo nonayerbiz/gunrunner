@@ -47,7 +47,11 @@ class DckrRunner(object):
     return [x.strip() for x in sh.docker.image.ls('--format', '{{json .}}').strip().split('\n')]
 
   def get_containers(self):
-    return [x.strip() for x in sh.docker.container.ls('--format', '{{json .}}').strip().split('\n')]
+    containers = sh.docker.container.ls('--format', '{{json .}}')
+    if containers:
+      containers = containers.strip().split('\n')
+      return [x.strip() for x container]
+    return []
 
   def build_gunserver(self):
     dckr_image_exists = False
