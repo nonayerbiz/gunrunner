@@ -50,7 +50,7 @@ class DckrRunner(object):
     containers = sh.docker.container.ls('--format', '{{json .}}')
     if containers:
       containers = containers.strip().split('\n')
-      return [x.strip() for x container]
+      return [x.strip() for x in containers]
     return []
 
   def build_gunserver(self):
