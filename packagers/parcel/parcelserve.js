@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 
 let corsOptions = {
-   origin : ['http://localhost:8765/gun'],
+   origin : ['https://gundb.eyfl.io/gun'],
 }
 
 app.use(cors(corsOptions));

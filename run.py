@@ -17,6 +17,8 @@ def __call_relay__(self):
   self.launch_relay()
 
 def __call_peer__(self):
+  teardown = []
+
   print("installing project")
   self.code_dir = os.path.join(PKGR, 'parcel')
   npm_install = sh.npm.install
@@ -32,19 +34,21 @@ def __call_peer__(self):
 
 if __name__ == '__main__':
   # RELAY
-  kwargs = {}
-  kwargs.update({'__call__':__call_relay__}) # these become class props & attrs
-  Relay = type('Relay', (DckrRunner,), kwargs) # define
-  myrelay = Relay() # instantiate it
-  myrelay()
+  # kwargs = {}
+  # kwargs.update({'__call__':__call_relay__}) # these become class props & attrs
+  # Relay = type('Relay', (DckrRunner,), kwargs) # define
+  # myrelay = Relay() # instantiate it
+  # myrelay()
+  # teardown.append(f'docker stop {myrelay.server_container_id}')
 
   # PEER
   peer_kwargs = {'__call__':__call_peer__}
   type('MyPeer', (object,), peer_kwargs)()()
+  teardown.append("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
   
   # TEARDOWN
   print(">>>---> TEARDOWN INSTRUCTIONS <---<<<")
-  teardown = []
-  teardown.append(f'docker stop {myrelay.server_container_id}')
-  teardown.append("for i in $( ps ax | awk '/[p]arcelserve.js/ {print $1}' ); do kill ${i}; done && ps ax | grep node;")
-  print(" && ".join(teardown))
+  if len(teardown) > 1:
+    print(" && ".join(teardown))
+  else:
+    print(teardown[0])
