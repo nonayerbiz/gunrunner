@@ -1,0 +1,72 @@
+<script src="./node_modules/gun/gun.js"></script>
+
+<input id="item_id_input">
+<input id="attr_1_input">
+<input id="attr_2_input">
+<input id="attr_3_input">
+<input id="attr_4_input">
+<script>
+	
+var gun = GUN(['http://localhost:8765/gun']);
+
+const addLoadEntry = async (
+	item_ID,
+	attr_1,
+	attr_2,
+	attr_3,
+	attr_4
+) => {
+	console.log('ADD LOAD ENTRY');
+	console.log(item_ID,
+		attr_1,
+		attr_2,
+		attr_3,
+		attr_4,
+	);
+	let row_obj = {
+		attr_1: attr_1,
+		attr_2: attr_2,
+		attr_3: attr_3,
+		attr_4: attr_4
+	};
+	await gun.get('entry').get(item_ID).put(row_obj, function(ack){
+		console.log(ack)
+	})
+};
+
+function click(){
+	let item_id = document.getElementById('item_id_input').value;
+	let attr_1 = document.getElementById('attr_1_input').value;
+	let attr_2 = document.getElementById('attr_2_input').value;
+	let attr_3 = document.getElementById('attr_3_input').value;
+	let attr_4 = document.getElementById('attr_4_input').value;
+	addLoadEntry(
+		item_id,
+		attr_1,
+		attr_2,
+		attr_3,
+		attr_4
+	);
+}
+
+const onToAllEntries = async () => {
+	console.log('--------------------------------------');
+	console.log('--- SUBSCRIBE TO LOAD LIST CHANGES ---');
+	console.log('--------------------------------------');
+
+	// SUBSCRIBE TO EVERY ROW 
+	await gun.get('entry').map().on((data, key) => {
+		console.log(
+				' --------------  TRIGGERING SUBSCRIPTION TO UPDATE TABLE -------------- ',
+				key, data, 
+			);
+
+		document.getElementById('item_id_input').value = key
+		document.getElementById('attr_1_input').value = data.attr_1;
+		document.getElementById('attr_2_input').value = data.attr_2;
+		document.getElementById('attr_3_input').value = data.attr_3;
+		document.getElementById('attr_4_input').value = data.attr_4;
+	});
+};
+onToAllEntries()
+</script>
