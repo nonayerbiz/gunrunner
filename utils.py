@@ -32,6 +32,38 @@ known_gun_peers = [
 ] # http://github.com/amark/gun/wiki/volunteer.dht
 
 
+class PkgJsonMngr(object):
+
+  def read(self):
+    if not hasattr(self, '_pyobj'):
+      with open(self.pkg_json_path, 'rt') as pkg_json:
+        self._pyobj = json.load(pkg_json)
+    return self._pyobj
+
+  def write(self):
+    with open(self.pkg_json_path, 'w') as pkg_json:
+      json.dump(self._pyobj, pkg_json, indent=2)
+
+  def set_gun_version(self, version):
+    self.read()
+    if 'devDependencies' in self._pyobj:
+      self._pyobj['devDependencies']['gun'] = version
+    elif 'dependencies' in self._pyobj:
+      self._pyobj['dependencies']['gun'] = version
+    self.write()
+
+  def __call__(self, pkg_json_path, gun_version=None):
+    self.pkg_json_path = pkg_json_path
+    if gun_version:
+      self.set_gun_version(gun_version)
+
+
+
+  
+
+
+
+
 class DckrRunner(object):
   @property
   def server_container_id(self):

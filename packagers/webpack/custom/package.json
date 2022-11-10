@@ -21,6 +21,6 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "gun": "^0.2020.1238"
+    "gun": "^0.2020.1232"
   }
 }

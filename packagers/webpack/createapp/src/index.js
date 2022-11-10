@@ -78,7 +78,6 @@ async function initGUN() {
   return true
 }
 
-
 document.addEventListener('readystatechange', event => {
   if (event.target.readyState === 'complete') {
     initGUN().then(initUI)

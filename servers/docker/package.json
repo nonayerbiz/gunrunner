@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "express": "^4.17.3",
-    "gun": "^0.2020.1235",
+    "gun": "0.2020.1232",
     "http": "^0.0.1-security"
   }
 }
