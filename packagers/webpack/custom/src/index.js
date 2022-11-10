@@ -69,7 +69,7 @@ async function initGUN() {
   const opt = {
     localStorage: true,
     file: 'eyfl',
-    peers: ['https://gundb.eyfl.io/gun']
+    peers: ['http://localhost:8765/gun']
   };
   opt.store = RindexedDB(opt);
   window.gun = Gun(opt);

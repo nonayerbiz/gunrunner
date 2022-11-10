@@ -9,27 +9,27 @@ import sh
 
 
 known_gun_peers = [
-  "https://relay.peer.ooo/gun",
-  "https://replicant.adamantium.online/gun",
+  "http://relay.peer.ooo/gun",
+  "http://replicant.adamantium.online/gun",
   "http://gun-matrix.herokuapp.com/gun",
-  "https://shockblox-gun-server.herokuapp.com/gun",
-  "https://mg-gun-manhattan.herokuapp.com/gun",
-  "https://gunmeetingserver.herokuapp.com/gun",
-  "https://gun-eu.herokuapp.com/gun",
-  "https://gunjs.herokuapp.com/gun",
-  "https://myriad-gundb-relay-peer.herokuapp.com/gun",
-  "https://gun-armitro.herokuapp.com/",
-  "https://fire-gun.herokuapp.com/gun",
+  "http://shockblox-gun-server.herokuapp.com/gun",
+  "http://mg-gun-manhattan.herokuapp.com/gun",
+  "http://gunmeetingserver.herokuapp.com/gun",
+  "http://gun-eu.herokuapp.com/gun",
+  "http://gunjs.herokuapp.com/gun",
+  "http://myriad-gundb-relay-peer.herokuapp.com/gun",
+  "http://gun-armitro.herokuapp.com/",
+  "http://fire-gun.herokuapp.com/gun",
   "http://34.101.247.230:8765/gun",
-  "https://gun-sashimi.herokuapp.com/gun",
-  "https://gun-ams1.cl0vr.co:443/gun",
-  "https://gun-manhattan.herokuapp.com/gun",
-  "https://us-west.xerberus.net/gun",
-  "https://dletta.rig.airfaas.com/gun",
-  "https://e2eec.herokuapp.com/gun",
-  "https://gun-us.herokuapp.com/gun",
-  "https://www.raygun.live/gun"
-] # https://github.com/amark/gun/wiki/volunteer.dht
+  "http://gun-sashimi.herokuapp.com/gun",
+  "http://gun-ams1.cl0vr.co:443/gun",
+  "http://gun-manhattan.herokuapp.com/gun",
+  "http://us-west.xerberus.net/gun",
+  "http://dletta.rig.airfaas.com/gun",
+  "http://e2eec.herokuapp.com/gun",
+  "http://gun-us.herokuapp.com/gun",
+  "http://www.raygun.live/gun"
+] # http://github.com/amark/gun/wiki/volunteer.dht
 
 
 class DckrRunner(object):
