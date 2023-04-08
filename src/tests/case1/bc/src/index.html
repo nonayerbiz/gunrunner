@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>My Second Parcel App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+    <script type="module" src="script.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>GUN RUNNER TEST CASE 1</h1>
+      <hr/>
+      <div class="test-case">
+        <h5>Case 1 - GOOD</h5>
+        <p>Testing Behavior: Whether node client able to catch browser client put event</p>
+        <p><b>Node Client</b> - subscription: gun.get('test1').open()</p>
+        <p><b>Browser Client</b> - gun.get('test1').get('test2').put('test_val')</p>
+        <p>Expected: Browser Client put event will trigger the 'open' subscription in Node Client </p>
+      </div>
+      <div class="test-case">
+        <h5>Case 2 - BAD</h5>
+        <p>Testing Behavior: Whether node client able to catch browser client user creation & put event</p>
+        <p><b>Node Client</b> - catch user creation & made subscription: gun.get('~user_pub').get('test1').on() && gun.get('~user_pub').open()</p>
+        <p><b>Browser Client</b> - Create user && gun.get('~user_pub').get('test1').put('test_val')</p>
+        <p>Expected: Browser Client create user & Node Client should catch the user creation event (current alternative is out event signal)</p>
+        <p>Expected: Browser Client put event will trigger the 'on' and 'open' subscription in Node Client</p>
+      </div>
+      <div class="test-case">
+        <h5>Case 3 - BAD</h5>
+        <p>Testing Behavior: Whether browser client able to catch node client event</p>
+        <p><b>Node Client</b> - gun.get('bc_sub').get('value').put(res)</p>
+        <p><b>Browser Client</b> - subscription: gun.get('bc_sub').get('value').on()</p>
+        <p>Expected: Node Client put event will trigger the 'on' subscription in Browser Client</p>
+        <hr/>
+      </div>
+      <hr/>
+      <div>
+        <h5>Public Node Test</h5>
+        <input id="node1" placeholder="node1">
+        <input id="node2" placeholder="node2">
+        <input id="node_val" placeholder="node_val">
+        <p id="pub-res">Action: </p>
+        <button id="get-btn">Get</button>
+        <button id="put-btn">Put</button>
+      </div>
+      <div>
+        <h5>User Test</h5>
+        <input id="usernode1" placeholder="username">
+        <input id="usernode2" value="testing123" disabled>
+        <input id="usernode3" placeholder="test1_val">
+        <button id="user-create-btn">User Create</button>
+        <button id="user-auth-btn">User Auth</button>
+        <button id="user-leave-btn">User Sign Out</button>
+        <button id="user-put-btn">User Put</button>
+      </div>
+      <hr/>
+      <div>
+        <h5>Subscription</h5>
+        <p id="subscription-res">Subscription <b>gun.get('bc_sub').get('value')</b>: ---</p>
+      </div>
+
+    </div>
+  </body>
+</html>

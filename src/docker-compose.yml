@@ -1,0 +1,109 @@
+version: "3.8"
+services:
+  
+  reverse-proxy:
+    image: traefik:latest
+    command:
+      - "--log.level=DEBUG"
+      # Don't expose containers unless they have a label
+      - "--providers.docker.exposedbydefault=false"
+      # Enable the Trafik dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+      - "443:443"
+    networks:
+      - "back-tier"
+      - "dockersocket4traefik_nw"
+
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock:ro # So that Traefik can listen to the Docker events
+    labels:
+      # Enables cross origin requests
+      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
+      # Enables forwarding of the request headers
+      - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=*
+  
+  # THIS MOUNTS THE CASE SRC
+  # THIS BUILDS A DIST
+  # THIS SERVES THE PARCEL DIST
+  bc_dist:
+    build:
+      context: tests/${case}/bc
+      dockerfile: ../../../../docker/build/bc/Dockerfile
+    entrypoint: /docker-entrypoint.sh
+    hostname: 'static.localhost'
+    networks:
+      back-tier:
+        aliases: 
+          - "static.localhost"
+    depends_on:
+      - reverse-proxy
+    expose:
+      - "1234"  
+    ports:
+      - "8888:8080"
+    image: bc_dist  
+    volumes:
+      - ./tests/${case}/bc/src:/usr/src/app/src
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bc.rule=Host(`static.localhost`)"
+      - "traefik.http.routers.bc.entrypoints=web"
+    platform: linux/arm64/v8
+
+  nc:
+    build:
+      context: tests/${case}/nc
+      dockerfile: ../../../../docker/build/nc/Dockerfile
+    entrypoint: /docker-entrypoint.sh
+    networks:
+      - "back-tier"
+    depends_on:
+      - reverse-proxy
+    expose:
+      - "9090"  
+    ports:
+      - "9090:9090"
+    image: nc  
+    volumes:
+      - ./tests/${case}/nc/src:/usr/src/app/src
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nc.rule=Host(`nc.localhost`)"
+      - "traefik.http.routers.nc.entrypoints=web"
+
+  # # THIS LOADS THE PARCEL DIST FROM URL
+  # pw:
+  #   build:
+  #     context: tests/${case}/pw
+  #     dockerfile: ../../../../docker/build/pw/Dockerfile
+  #   entrypoint: /docker-entrypoint.sh
+  #   networks:
+  #     - "back-tier"
+  #   depends_on:
+  #     - reverse-proxy
+  #     - bc_dist
+  #   ports:
+  #     - "8070:8070"
+  #   volumes:
+  #     - ./tests/${case}/pw:/usr/src/app
+  #     - ${HOME}/Library/Caches/ms-playwright:/ms-playwright
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.pw.rule=Host(`pw.localhost`)"
+  #     - "traefik.http.routers.pw.entrypoints=web"
+  #   environment:
+  #     # - "STATIC_URL=http://static.localhost"
+  #     - "STATIC_URL=http://src-bc_dist-1:8888"
+
+
+
+
+networks:
+  back-tier:
+  dockersocket4traefik_nw:
