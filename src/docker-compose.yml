@@ -1,6 +1,5 @@
 version: "3.8"
 services:
-  
   reverse-proxy:
     image: traefik:latest
     command:
